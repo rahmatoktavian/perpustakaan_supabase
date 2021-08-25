@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
-import { Provider as PaperProvider, Appbar, Avatar, List, Button, } from 'react-native-paper';
+import { Provider as PaperProvider, Appbar, Avatar, List, Button, IconButton } from 'react-native-paper';
 
 import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
 import Loading from '../../../component/Loading';
 
-class SupaBukuListScreen extends Component {
+class BukuListScreen extends Component {
 
   constructor(props) {
       super(props);
@@ -59,8 +59,11 @@ class SupaBukuListScreen extends Component {
                   title={row.judul}
                   description={'Kategori: '+row.kategori_buku.nama}
                   left={() => <Avatar.Text size={35} label={row.judul.charAt(0).toUpperCase()} style={{margin:10}} />}
-                  right={props => <List.Icon icon="pencil" />}
-                  onPress={() => this.props.navigation.navigate('BukuUpdateScreen', {id: row.id})}
+                  right={props => <View style={{flexDirection:'row'}}>
+                                      <IconButton icon="image" onPress={() => this.props.navigation.navigate('BukuSampulScreen', {id: row.id})} />
+                                      <IconButton icon="pencil" onPress={() => this.props.navigation.navigate('BukuUpdateScreen', {id: row.id})} />
+                                  </View>
+                        }
                 />
               ))}
               {/*end loop*/}
@@ -81,4 +84,4 @@ class SupaBukuListScreen extends Component {
   }
 }
 
-export default SupaBukuListScreen;
+export default BukuListScreen;

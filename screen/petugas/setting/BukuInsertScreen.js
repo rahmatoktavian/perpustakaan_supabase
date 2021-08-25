@@ -8,7 +8,7 @@ import ValidationComponent from 'react-native-form-validator';
 import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
 
-class SupaBukuInsertScreen extends ValidationComponent {
+class BukuInsertScreen extends ValidationComponent {
 
   constructor(props) {
       super(props);
@@ -78,7 +78,7 @@ class SupaBukuInsertScreen extends ValidationComponent {
       }
 
       this.setState({isLoading:false});
-      this.props.navigation.navigate('SupaBukuListScreen');
+      this.props.navigation.navigate('BukuListScreen');
     } else {
       showMessage({
         message: this.getErrorMessages(),
@@ -147,4 +147,4 @@ class SupaBukuInsertScreen extends ValidationComponent {
   }
 }
 
-export default SupaBukuInsertScreen;
+export default BukuInsertScreen;

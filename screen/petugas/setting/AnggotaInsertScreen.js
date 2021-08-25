@@ -8,7 +8,7 @@ import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
 import Loading from '../../../component/Loading';
 
-class SupaAnggotaInsertScreen extends ValidationComponent {
+class AnggotaInsertScreen extends ValidationComponent {
 
   constructor(props) {
       super(props);
@@ -62,7 +62,7 @@ class SupaAnggotaInsertScreen extends ValidationComponent {
       }
       
       this.setState({isLoading:false});
-      this.props.navigation.navigate('SupaAnggotaListScreen');
+      this.props.navigation.navigate('AnggotaListScreen');
 
     } else {
       showMessage({
@@ -118,4 +118,4 @@ class SupaAnggotaInsertScreen extends ValidationComponent {
   }
 }
 
-export default SupaAnggotaInsertScreen;
+export default AnggotaInsertScreen;

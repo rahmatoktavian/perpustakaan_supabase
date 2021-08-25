@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { View, Alert, ScrollView } from 'react-native';
+import { View, Alert, ScrollView, Image } from 'react-native';
 import { Provider as PaperProvider, Appbar, Button, TextInput, HelperText, Avatar, Portal, Modal, ActivityIndicator, } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { showMessage } from "react-native-flash-message";
 import ValidationComponent from 'react-native-form-validator';
-import * as ImagePicker from 'expo-image-picker';
-import { decode } from 'base64-arraybuffer';
 
 import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
 import Loading from '../../../component/Loading';
 
-class SupaBukuInsertScreen extends ValidationComponent {
+class BukuInsertScreen extends ValidationComponent {
 
   constructor(props) {
       super(props);
@@ -22,9 +20,6 @@ class SupaBukuInsertScreen extends ValidationComponent {
         kategori_id: '',
         judul: '',
         stok: '',
-
-        sampul: null,
-        sampulURL: null,
         isLoading: false,
       };
   }
@@ -60,23 +55,10 @@ class SupaBukuInsertScreen extends ValidationComponent {
                                     .eq('id', id)
                                     .single();
 
-      //get url image sampul
-      let sampulURL = '';
-      if(data.sampul != '') {
-        const { signedURL } = await supabase
-                                      .storage
-                                      .from('hmd')
-                                      .createSignedUrl('public/'+data.sampul, 60);
-        sampulURL = signedURL;
-      }
-
       this.setState({
                       kategori_id: data.kategori_id,
                       judul: data.judul,
                       stok: String(data.stok),
-
-                      sampul: data.sampul,
-                      sampulURL: sampulURL,
                       isLoading:false
                     });
   }
@@ -121,7 +103,7 @@ class SupaBukuInsertScreen extends ValidationComponent {
       }
       
       this.setState({isLoading:false});
-      this.props.navigation.navigate('SupaBukuListScreen');
+      this.props.navigation.navigate('BukuListScreen');
     } else {
       showMessage({
         message: this.getErrorMessages(),
@@ -150,7 +132,7 @@ class SupaBukuInsertScreen extends ValidationComponent {
       const { data, error } = await supabase
                                     .from('buku')
                                     .delete()
-                                    .eq('id', id)
+                                    .eq('id', id);
 
       //menampilkan response erroe
       if(error != null) {
@@ -168,220 +150,7 @@ class SupaBukuInsertScreen extends ValidationComponent {
       }
       
       this.setState({isLoading:false});
-      this.props.navigation.navigate('SupaBukuListScreen');
-  }
-
-  async onOpenCamera() {
-    //request akses kamera
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      showMessage({
-        message: 'Akses kamera tidak diijinkan',
-        type: 'danger',
-        icon: 'danger',
-      });
-
-    } else {
-      this.setState({isLoading:true});
-
-      //buka kamera
-      let fileImage = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        aspect: [4, 3],
-        quality: 1,
-        base64: true,
-      });
-
-      //jika close camera
-      if (fileImage.cancelled) {
-        this.setState({isLoading:false});
-
-      //proses upload
-      } else {
-
-        //ambil nama file & ekstensi (jpg/png)
-        let fileData = fileImage.uri.split('/');
-        let fileName = fileData[(fileData.length-1)];
-        let fileNameData = fileName.split('.');
-        let fileNameExt = fileNameData[1];
-
-        //upload image ke supabase storage
-        const { data, error } = await supabase
-                                .storage
-                                .from('hmd')
-                                .upload('public/'+fileName, decode(fileImage.base64), {
-                                     contentType: 'image/'+fileNameExt
-                                });
-
-        //get url image sampul
-        const { signedURL } = await supabase
-                                      .storage
-                                      .from('hmd')
-                                      .createSignedUrl('public/'+fileName, 60);
-        let sampulURL = signedURL;
-
-        //respon
-        if(error != null) {
-          showMessage({
-            message: error,
-            type: 'danger',
-            icon: 'danger',
-          });
-        } else {
-          //update sampul di table buku
-          let id = this.props.route.params.id;
-          const { data } = await supabase
-                                        .from('buku')
-                                        .update([{
-                                            sampul: fileName,
-                                        }])
-                                        .eq('id', id);
-
-          showMessage({
-            message: 'Gambar berhasil diupload',
-            type: 'success',
-            icon: 'success',
-          });
-        }
-
-        this.setState({isLoading:false, sampulURL:sampulURL});
-      }
-      //end proses upload
-
-    }
-
-  }
-
-  async onOpenGallery() {
-    this.setState({isLoading:true});
-
-    //request akses galeri
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      showMessage({
-        message: 'Akses galeri tidak diijinkan',
-        type: 'danger',
-        icon: 'danger',
-      });
-
-    } else {
-
-      //buka galeri
-      let fileImage = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        aspect: [4, 3],
-        quality: 1,
-        base64: true,
-      });
-
-      //jika close galeri
-      if (fileImage.cancelled) {
-        this.setState({isLoading:false});
-
-      //proses upload
-      } else {
-      
-        //ambil nama file & ekstensi (jpg/png)
-        let fileData = fileImage.uri.split('/');
-        let fileName = fileData[(fileData.length-1)];
-        let fileNameData = fileName.split('.');
-        let fileNameExt = fileNameData[1];
-
-        //upload image ke supabase storage
-        const { data, error } = await supabase
-                                .storage
-                                .from('hmd')
-                                .upload('public/'+fileName, decode(fileImage.base64), {
-                                     contentType: 'image/'+fileNameExt
-                                })
-
-        //get url image sampul
-        const { signedURL } = await supabase
-                                      .storage
-                                      .from('hmd')
-                                      .createSignedUrl('public/'+fileName, 60);
-        let sampulURL = signedURL;
-
-        //respon
-        if(error != null) {
-          showMessage({
-            message: error,
-            type: 'danger',
-            icon: 'danger',
-          });
-        } else {
-          //update sampul di table buku
-          let id = this.props.route.params.id;
-          const { data } = await supabase
-                                        .from('buku')
-                                        .update([{
-                                            sampul: fileName,
-                                        }])
-                                        .eq('id', id);
-
-          showMessage({
-            message: 'Gambar berhasil diupload',
-            type: 'success',
-            icon: 'success',
-          });
-        }
-
-        this.setState({isLoading:false, sampulURL:sampulURL});
-      }
-      //end proses upload
-    }
-
-  }
-
-  onDeleteSampulConfirm() {
-    Alert.alert(
-      "Perhatian",
-      "Gambar sampul akan dihapus",
-      [
-        { text: "Batal" },
-        { text: "OK", onPress: () => this.onDeleteSampul() }
-      ]
-    );
-  }
-
-  async onDeleteSampul() {
-      this.setState({isLoading:true});
-
-      //ambil nama file
-      let fileName = this.state.sampul;
-
-      //upload image ke supabase storage
-      const { data, error } = await supabase
-                              .storage
-                              .from('hmd')
-                              .remove(['public/'+fileName]);
-
-      if(error != null) {
-        showMessage({
-          message: error,
-          type: 'danger',
-          icon: 'danger',
-        });
-      } else {
-        //update sampul di table buku
-        let id = this.props.route.params.id;
-        const { data } = await supabase
-                                      .from('buku')
-                                      .update([{
-                                          sampul: null,
-                                      }])
-                                      .eq('id', id);
-
-        showMessage({
-          message: 'Gambar berhasil dihapus',
-          type: 'success',
-          icon: 'success',
-        });
-      }
-      
-      this.setState({isLoading:false, sampulURL:null});
+      this.props.navigation.navigate('BukuListScreen');
   }
 
   render() {
@@ -424,30 +193,6 @@ class SupaBukuInsertScreen extends ValidationComponent {
               style={{margin:10}}
             />
 
-            <View>
-                <HelperText style={{marginHorizontal:10, marginTop:10}}>Sampul</HelperText>
-
-                {this.state.sampulURL != null ?
-                  <View style={{flex:1,alignItems:'center'}}>
-                    <Avatar.Image size={100} source={{uri:this.state.sampulURL}} style={{marginLeft:10}} />
-                    <Button icon="delete" mode="text" color="grey" onPress={() => this.onDeleteSampulConfirm()}>
-                      Delete
-                    </Button>
-                  </View>
-                  :
-                  <View>
-                    <Button icon="camera" mode="text" color={Theme.colors.primary} onPress={() => this.onOpenCamera()}>
-                      Buka Kamera
-                    </Button>
-
-                    <Button icon="image" mode="text" color={Theme.colors.primary} onPress={() => this.onOpenGallery()}>
-                      Upload Galeri
-                    </Button>
-                  </View>
-                }
-
-              </View>
-
             <Button
                 mode="contained"
                 icon="check"
@@ -468,4 +213,4 @@ class SupaBukuInsertScreen extends ValidationComponent {
   }
 }
 
-export default SupaBukuInsertScreen;
+export default BukuInsertScreen;

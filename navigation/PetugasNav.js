@@ -46,6 +46,7 @@ import AnggotaUpdateScreen from '../screen/petugas/setting/AnggotaUpdateScreen';
 import BukuListScreen from '../screen/petugas/setting/BukuListScreen';
 import BukuInsertScreen from '../screen/petugas/setting/BukuInsertScreen';
 import BukuUpdateScreen from '../screen/petugas/setting/BukuUpdateScreen';
+import BukuSampulScreen from '../screen/petugas/setting/BukuSampulScreen';
 
 export default function PetugasNav() {
   return (
@@ -108,7 +109,6 @@ export default function PetugasNav() {
 				                  options={{headerShown:false}}
 				                />
 				                
-
 				                <Stack.Screen 
 				                  name="PeminjamanInsertMapScreen"
 				                  component={PeminjamanInsertMapScreen}
@@ -195,6 +195,11 @@ export default function PetugasNav() {
 						                <Stack.Screen 
 						                  name="BukuUpdateScreen"
 						                  component={BukuUpdateScreen}
+						                  options={{headerShown:false}}
+						                />
+						                <Stack.Screen 
+						                  name="BukuSampulScreen"
+						                  component={BukuSampulScreen}
 						                  options={{headerShown:false}}
 						                />
 									</Stack.Navigator>

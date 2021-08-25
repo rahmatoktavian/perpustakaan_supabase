@@ -6,7 +6,7 @@ import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
 import Loading from '../../../component/Loading';
 
-class SupaAnggotaListScreen extends Component {
+class AnggotaListScreen extends Component {
 
   constructor(props) {
       super(props);
@@ -81,4 +81,4 @@ class SupaAnggotaListScreen extends Component {
   }
 }
 
-export default SupaAnggotaListScreen;
+export default AnggotaListScreen;
