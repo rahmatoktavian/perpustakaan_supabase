@@ -10,7 +10,7 @@ import * as Linking from 'expo-linking';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-import BaseUrl from '../../../config/BaseUrl';
+import supabase from '../../../config/supabase.js';
 import Theme from '../../../config/Theme';
 import storeApp from '../../../config/storeApp';
 import Loading from '../../../component/Loading';
@@ -50,7 +50,8 @@ class PeminjamanInsertScreen extends React.Component {
       alert('Permission to access location was denied');
     } else {
       //mengampil lokasi (latitude & longitude)
-      let currLocation = await Location.getCurrentPositionAsync({});
+      let currLocation = await Location.getLastKnownPositionAsync({});
+      //let currLocation = await Location.getCurrentPositionAsync({});
       let currLatitude = currLocation.coords.latitude;
       let currLongitude = currLocation.coords.longitude;
 
@@ -62,7 +63,7 @@ class PeminjamanInsertScreen extends React.Component {
   }
 
   //fungsi marker/tanda di peta
-  getMarker(currLocation) {
+  async getMarker(currLocation) {
     this.setState({isLoading:true});
 
     let listMarker = [];
@@ -70,34 +71,22 @@ class PeminjamanInsertScreen extends React.Component {
     //marker lokasi handphone (marker biru)
     listMarker.push({title: 'Lokasi Saya', location:{latitude:currLocation.latitude, longitude:currLocation.longitude}, currLocation:true});
 
-    //api url & parameter
-    let apiurl = BaseUrl()+'/anggota';
-    const options = {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},
-    };
+    //query data supabase
+    const { data, error } = await supabase
+                                  .from('anggota')
+                                  .select('*')
+                                  .order('nama', {ascending:true})
 
-    //memanggil server api
-    fetch(apiurl, options)
-    .then(response => {return response.json()})
-
-    //response dari api
-    .then(responseData => {
-        //menangkap response api
-        let data = responseData.data;
-
-        //loop data api
-        data.map(row => {
-          //menambah marker dari data api, jika ada data lat & long (marker merah)
-          if(row.latitude != 0 && row.longitude != 0) {
-            listMarker.push({title:row.nama, nim:row.nim, jurusan:row.jurusan, location:{latitude:parseFloat(row.latitude), longitude:parseFloat(row.longitude)}, currLocation:false});
-          }
-
-        })
-
-        //set state marker & loading berhenti
-        this.setState({listMarker: listMarker, isLoading:false});
+    //loop data api
+    data.map(row => {
+      //menambah marker dari data api, jika ada data lat & long (marker merah)
+      if(row.latitude != null && row.longitude != null) {
+        listMarker.push({title:row.nama, nim:row.nim, jurusan:row.jurusan, location:{latitude:parseFloat(row.latitude), longitude:parseFloat(row.longitude)}, currLocation:false});
+      }
     })
+
+    //set state marker & loading berhenti
+    this.setState({listMarker: listMarker, isLoading:false});
   }
 
   getMarkerDetail(marker) {
@@ -109,49 +98,43 @@ class PeminjamanInsertScreen extends React.Component {
     Linking.openURL('http://www.google.com/maps/place/'+location.latitude+','+location.longitude);
   }
 
-  //memanggil api untuk menyimpan data
-  onInsert(nim) {
-      this.setState({isLoading:true});
+  async onInsert(nim) {
+    this.setState({isLoading:true});
 
-      //data tanggal pinjam : tanggal hari ini
-      let tanggal_pinjam = dateFormat(new Date());
+    let tanggal_pinjam = dateFormat(new Date());
 
-      //tanggal batas kembali : tanggal pinjam + 7
-      let currDate = new Date();
-      currDate.setDate(currDate.getDate() + 7);
-      let tanggal_batas_kembali = dateFormat(currDate);
+    let currDate = new Date();
+    currDate.setDate(currDate.getDate() + 7);
+    let tanggal_batas_kembali = dateFormat(currDate);
 
-      //api url
-      let apiurl = BaseUrl()+'/peminjaman/index/';
+    //query data supabase
+    const { data, error } = await supabase
+                                  .from('peminjaman')
+                                  .insert([{
+                                      nim: nim,
+                                      petugas_id: this.state.petugas_id,
+                                      tanggal_pinjam: tanggal_pinjam,
+                                      tanggal_batas_kembali: tanggal_batas_kembali,
+                                  }])
 
-      //menyiapkan data untuk dikirim ke server api
-      const options = {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            nim: nim,
-            petugas_id: this.state.petugas_id,
-            tanggal_pinjam: tanggal_pinjam,
-            tanggal_batas_kembali: tanggal_batas_kembali,
-          })
-      };
+    this.setState({isLoading:false});
 
-      //memanggil server api
-      fetch(apiurl, options)
-      .then(response => {return response.json()})
+    //menampilkan response erroe
+    if(error != null) {
+      showMessage({
+        message: error.message,
+        type: 'danger',
+        icon: 'danger',
+      });
+    } else {
+      showMessage({
+        message: 'Data berhasil ditambah',
+        type: 'success',
+        icon: 'success',
+      });
+    }
 
-      //response dari api
-      .then(responseData => {
-          this.setState({isLoading:false});
-
-          //menampilkan response message
-          showMessage({
-            message: responseData.message,
-            type: responseData.status ? 'success' : 'danger',
-            icon: responseData.status ? 'success' : 'danger',
-          });
-          this.props.navigation.navigate('PeminjamanListScreen');
-      })
+    this.props.navigation.navigate('PeminjamanListScreen');
   }
 
   render() {

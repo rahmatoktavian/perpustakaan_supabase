@@ -84,6 +84,15 @@ class PeminjamanListScreen extends Component {
             Insert Peminjaman
           </Button>
 
+          <Button
+              mode="outlined"
+              icon="google-maps"
+              onPress={() => this.props.navigation.navigate('PeminjamanInsertMapScreen')}
+              style={{marginHorizontal:20, marginBottom:10}}
+          >
+            Insert Peminjaman
+          </Button>
+
           <Loading isLoading={this.state.isLoading} />
         </PaperProvider>
       )
