@@ -35,7 +35,7 @@ class BukuInsertScreen extends ValidationComponent {
                                     .from('kategori_buku')
                                     .select('*')
                                     .order('nama', {ascending:true})
-  
+
       //memasukan respon ke state untuk loop data di render
       this.setState({kategori_buku_data:data, isLoading:false});
   }

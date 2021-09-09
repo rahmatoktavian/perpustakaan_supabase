@@ -108,13 +108,13 @@ class SupaReportSummaryScreen extends Component {
             </DataTable.Row>
 
           </DataTable>
-          </ScrollView> 
+          </ScrollView>
 
           {/*export pdf*/}
           {this.state.data &&
-          <Button 
-              mode="outlined" 
-              icon="download" 
+          <Button
+              mode="outlined"
+              icon="download"
               onPress={() => this.onExportPDF()}
               style={{margin:20}}
           >
