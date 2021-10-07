@@ -61,7 +61,7 @@ class App extends React.Component {
 			return (
 				<PaperProvider theme={Theme}>
 					<AuthNav />
-					<FlashMessage position="top" floating={true} style={{marginTop:20}} />
+					<FlashMessage position="top" floating={true} duration={5000} style={{marginTop:20}} />
 				</PaperProvider>
 			)
 		}
