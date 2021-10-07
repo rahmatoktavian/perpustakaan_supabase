@@ -68,9 +68,8 @@ class RegisterAnggotaScreen extends ValidationComponent {
         if(error) {
               showMessage({
                 message: error.message,
-                icon: 'warning',
-                backgroundColor: 'red',
-                color: Theme.colors.background,
+                icon: 'danger',
+                type: 'danger',
               });
 
         //register succeed

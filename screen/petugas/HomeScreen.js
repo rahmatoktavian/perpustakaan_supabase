@@ -91,7 +91,7 @@ class HomeScreen extends Component {
                 labelColor: (opacity = 1) =>  `rgba(30, 144, 255, ${opacity})`,
               }}
               verticalLabelRotation={45}
-              bezier={true}
+              bezier={false}
               style={{
                 marginVertical:10,
                 marginLeft:-25,

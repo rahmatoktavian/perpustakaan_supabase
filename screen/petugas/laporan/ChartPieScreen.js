@@ -55,7 +55,7 @@ class ChartPieScreen extends Component {
           //masukin data api ke format pie chart
           piechart_data.push({
             name: row.nama,
-            value: parseInt(row.total_buku),
+            value: row.total_buku,
             color: this.getChartColor(index),
             legendFontColor: "#7F7F7F",
           })
