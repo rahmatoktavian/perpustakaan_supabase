@@ -39,20 +39,10 @@ class BukuSampulScreen extends ValidationComponent {
                                     .eq('id', id)
                                     .single();
 
-      //get url image sampul
-      let sampulURL = '';
-      if(data.sampul != '') {
-        const { signedURL } = await supabase
-                                      .storage
-                                      .from('hmd')
-                                      .createSignedUrl('buku/'+data.sampul, 60);
-        sampulURL = signedURL;
-      }
-
       this.setState({
                       judul: data.judul,
                       sampul: data.sampul,
-                      sampulURL: sampulURL,
+                      sampulURL: data.sampulURL,
                       isLoading:false
                     });
   }
@@ -104,7 +94,7 @@ class BukuSampulScreen extends ValidationComponent {
         const { signedURL } = await supabase
                                       .storage
                                       .from('hmd')
-                                      .createSignedUrl('buku/'+fileName, 60);
+                                      .createSignedUrl('buku/'+fileName, 100000000);
         let sampulURL = signedURL;
 
         //respon
@@ -121,6 +111,7 @@ class BukuSampulScreen extends ValidationComponent {
                                         .from('buku')
                                         .update([{
                                             sampul: fileName,
+                                            sampulURL: sampulURL,
                                         }])
                                         .eq('id', id);
 
@@ -204,6 +195,7 @@ class BukuSampulScreen extends ValidationComponent {
                                         .from('buku')
                                         .update([{
                                             sampul: fileName,
+                                            sampulURL: sampulURL,
                                         }])
                                         .eq('id', id);
 
@@ -243,7 +235,7 @@ class BukuSampulScreen extends ValidationComponent {
                               .storage
                               .from('hmd')
                               .remove(['buku/'+fileName]);
-
+     
       if(error != null) {
         showMessage({
           message: error,
@@ -257,6 +249,7 @@ class BukuSampulScreen extends ValidationComponent {
                                       .from('buku')
                                       .update([{
                                           sampul: null,
+                                          sampulURL: null,
                                       }])
                                       .eq('id', id);
 
@@ -267,7 +260,7 @@ class BukuSampulScreen extends ValidationComponent {
         });
       }
       
-      this.setState({isLoading:false, sampulURL:null});
+      this.setState({isLoading:false, sampul:null, sampulURL:null});
   }
 
   render() {

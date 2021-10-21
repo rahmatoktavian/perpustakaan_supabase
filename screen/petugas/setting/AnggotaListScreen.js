@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
-import { Provider as PaperProvider, Appbar, List, Portal, Modal, ActivityIndicator, Button, } from 'react-native-paper';
+import { Provider as PaperProvider, Appbar, List, Portal, Modal, ActivityIndicator, IconButton, Button, } from 'react-native-paper';
 
 import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
-import Loading from '../../../component/Loading';
+import Loading from '../../../component/Loading'; 
 
 class AnggotaListScreen extends Component {
 
@@ -42,6 +42,26 @@ class AnggotaListScreen extends Component {
       this.setState({data:data, isLoading:false});
   }
 
+  onSendWA() {
+    fetch('https://console.zenziva.net/wareguler/api/sendWA/',
+      {
+         method: 'POST', 
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           'userkey': '057eaa734f70',
+           'passkey' : '85a0025dd95930c35959a977',
+           'to' : '089663378469',
+           'message' : 'HMD Academy'
+         }), 
+      }
+    )
+    .then((response) => response.json())
+    .then((json) => {
+        
+    })
+    .catch((error) => console.error(error));
+  }
+
   render() {
       return (
         <PaperProvider theme={Theme}>
@@ -58,8 +78,12 @@ class AnggotaListScreen extends Component {
                   key={key}
                   title={row.nama}
                   description={'NIM : '+row.nim}
-                  right={props => <List.Icon icon="pencil" />}
-                  onPress={() => this.props.navigation.navigate('AnggotaUpdateScreen', {nim: row.nim})}
+                  right={props => 
+                                  <>
+                                  <IconButton icon="whatsapp" onPress={() => this.onSendWA()} />
+                                  <IconButton icon="pencil" onPress={() => this.props.navigation.navigate('AnggotaUpdateScreen', {nim: row.nim})} />
+                                  </>}
+                  
                 />
               ))}
               {/*end loop*/}

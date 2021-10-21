@@ -113,8 +113,8 @@ class SupaReportDetailScreen extends Component {
 
     this.state.data && this.state.data.map(row => {
       content += '<tr>';
-        content += '<td>'+row.nama_anggota+'</td>';
-        content += '<td>'+row.nama_petugas+'</td>';
+        content += '<td>'+row.anggota.nama+'</td>';
+        content += '<td>'+row.petugas.nama+'</td>';
         content += '<td>'+dateFormatDB(row.tanggal_pinjam)+'</td>';
         content += '<td>'+dateFormatDB(row.tanggal_batas_kembali)+'</td>';
       content += '</tr>';
