@@ -30,6 +30,7 @@ import PeminjamanInsertMapScreen from '../screen/petugas/peminjaman/PeminjamanIn
 //laporan
 import LaporanScreen from '../screen/petugas/laporan/LaporanScreen';
 import ChartPieScreen from '../screen/petugas/laporan/ChartPieScreen';
+
 //laporan supabase
 import ReportSummaryScreen from '../screen/petugas/laporan/ReportSummaryScreen';
 import ReportDetailScreen from '../screen/petugas/laporan/ReportDetailScreen';
@@ -47,6 +48,8 @@ import BukuListScreen from '../screen/petugas/setting/BukuListScreen';
 import BukuInsertScreen from '../screen/petugas/setting/BukuInsertScreen';
 import BukuUpdateScreen from '../screen/petugas/setting/BukuUpdateScreen';
 import BukuSampulScreen from '../screen/petugas/setting/BukuSampulScreen';
+
+import OngkirScreen from '../screen/petugas/setting/OngkirScreen';
 
 export default function PetugasNav() {
   return (
@@ -200,6 +203,11 @@ export default function PetugasNav() {
 						                <Stack.Screen 
 						                  name="BukuSampulScreen"
 						                  component={BukuSampulScreen}
+						                  options={{headerShown:false}}
+						                />
+						                <Stack.Screen 
+						                  name="OngkirScreen"
+						                  component={OngkirScreen}
 						                  options={{headerShown:false}}
 						                />
 									</Stack.Navigator>

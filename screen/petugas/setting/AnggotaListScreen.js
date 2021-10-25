@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Provider as PaperProvider, Appbar, List, Portal, Modal, ActivityIndicator, IconButton, Button, } from 'react-native-paper';
+import { showMessage } from "react-native-flash-message";
 
 import supabase from '../../../config/supabase';
 import Theme from '../../../config/Theme';
@@ -43,6 +44,8 @@ class AnggotaListScreen extends Component {
   }
 
   onSendWA() {
+    this.setState({isLoading:true});
+
     fetch('https://console.zenziva.net/wareguler/api/sendWA/',
       {
          method: 'POST', 
@@ -50,16 +53,35 @@ class AnggotaListScreen extends Component {
          body: JSON.stringify({
            'userkey': '057eaa734f70',
            'passkey' : '85a0025dd95930c35959a977',
-           'to' : '089663378469',
-           'message' : 'HMD Academy'
+           'to' : '085691357671',
+           'message' : 'Pesan dari RN'
          }), 
       }
     )
     .then((response) => response.json())
     .then((json) => {
-        
+        console.log(json);
+
+        if(json.text === 'Success') {
+          showMessage({
+            message: 'Berhasil kirim pesan',
+            type: 'success',
+            icon: 'success',
+          });
+        } else {
+          showMessage({
+            message: json.text,
+            type: 'danger',
+            icon: 'danger',
+          });
+        }  
+        this.setState({isLoading:false});
+      
     })
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error)
+      this.setState({isLoading:false});
+    });
   }
 
   render() {

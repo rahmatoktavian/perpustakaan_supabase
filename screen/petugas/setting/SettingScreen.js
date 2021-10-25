@@ -33,6 +33,13 @@ class SettingScreen extends Component {
                 right={props => <List.Icon icon="arrow-right" />}
                 onPress={() => this.props.navigation.navigate('BukuListScreen')}
               />
+              <List.Item
+                key={1}
+                title="Ongkir"
+                left={props => <List.Icon icon="truck" />}
+                right={props => <List.Icon icon="arrow-right" />}
+                onPress={() => this.props.navigation.navigate('OngkirScreen')}
+              />
 
           </List.Section>
           </ScrollView>
